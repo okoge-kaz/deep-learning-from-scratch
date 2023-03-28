@@ -46,3 +46,7 @@ class TwoLayerNet:
 
         for layer in self.layers:
             self.params += layer.params
+
+
+# Sigmoid, AffineクラスがLayerクラスを継承しているとすると、+ 演算子などで mypy error がでなくなる。
+# 研究のときは、どこまで型を厳密にするかを考える必要がある。
