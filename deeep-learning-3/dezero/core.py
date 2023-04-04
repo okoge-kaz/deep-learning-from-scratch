@@ -13,11 +13,16 @@ class Variable:
         self.creator = func
 
     def backward(self) -> None:
-        creator_func: Optional["Function"] = self.creator
-        if creator_func is not None:
-            x: Variable = creator_func.input
-            x.grad = creator_func.backward(self.grad)
-            x.backward()
+        creator_funcs: list[Optional["Function"]] = [self.creator]
+        while creator_funcs != []:
+            creator_func: Optional["Function"] = creator_funcs.pop()
+            if creator_func is not None:
+                # 関数の入出力を取得
+                x, y = creator_func.input, creator_func.output
+                x.grad = creator_func.backward(y.grad)
+
+                if x.creator is not None:
+                    creator_funcs.append(x.creator)
 
 
 class Function:
