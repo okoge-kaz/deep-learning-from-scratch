@@ -5,6 +5,10 @@ import numpy as np
 
 class Variable:
     def __init__(self, data: Any):
+        if data is not None:
+            if not isinstance(data, np.ndarray):
+                raise TypeError(f"{type(data)} is not supported")
+
         self.data: Any = data
         self.grad: Any = None
         self.creator: Optional["Function"] = None
@@ -31,8 +35,8 @@ class Variable:
 class Function:
     def __call__(self, input: Variable) -> Variable:
         x = input.data
-        y = self.forward(x)
-        output = Variable(y)
+        y = self.forward(x)  # y is np.ndarray or float or int
+        output = Variable(as_array(y))
         output.set_creator(self)  # 出力変数に生みの親を覚えさせる
 
         self.input = input
@@ -72,6 +76,20 @@ def square(x: Variable) -> Variable:
 
 def exp(x: Variable) -> Variable:
     return Exp()(x)
+
+
+def as_array(x: Any) -> np.ndarray:
+    """Convert to numpy array.
+
+    Args:
+        x (Any): np.ndarray or float or int
+
+    Returns:
+        np.ndarray
+    """
+    if np.isscalar(x):
+        return np.array(x)
+    return x
 
 
 x = Variable(np.array(0.5))
