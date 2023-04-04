@@ -12,6 +12,13 @@ class Variable:
     def set_creator(self, func: "Function") -> None:
         self.creator = func
 
+    def backward(self) -> None:
+        creator_func: Optional["Function"] = self.creator
+        if creator_func is not None:
+            x: Variable = creator_func.input
+            x.grad = creator_func.backward(self.grad)
+            x.backward()
+
 
 class Function:
     def __call__(self, input: Variable) -> Variable:
@@ -61,15 +68,6 @@ b = B(a)
 y = C(b)
 
 y.grad = np.array(1.0)
-b.grad = C.backward(y.grad)
-a.grad = B.backward(b.grad)
-x.grad = A.backward(a.grad)
+y.backward()
 
 print(x.grad)
-
-assert y.creator == C
-assert y.creator.input == b  # type: ignore
-assert b.creator == B
-assert b.creator.input == a  # type: ignore
-assert a.creator == A
-assert a.creator.input == x  # type: ignore
