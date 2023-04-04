@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 
@@ -66,3 +66,10 @@ a.grad = B.backward(b.grad)
 x.grad = A.backward(a.grad)
 
 print(x.grad)
+
+assert y.creator == C
+assert y.creator.input == b  # type: ignore
+assert b.creator == B
+assert b.creator.input == a  # type: ignore
+assert a.creator == A
+assert a.creator.input == x  # type: ignore
