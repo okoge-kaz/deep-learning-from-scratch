@@ -7,6 +7,10 @@ class Variable:
     def __init__(self, data: Any):
         self.data: Any = data
         self.grad: Any = None
+        self.creator: Optional["Function"] = None
+
+    def set_creator(self, func: "Function") -> None:
+        self.creator = func
 
 
 class Function:
@@ -14,8 +18,10 @@ class Function:
         x = input.data
         y = self.forward(x)
         output = Variable(y)
+        output.set_creator(self)  # 出力変数に生みの親を覚えさせる
 
         self.input = input
+        self.output = output  # 出力も覚える
         return output
 
     def forward(self, x: Any) -> Any:
