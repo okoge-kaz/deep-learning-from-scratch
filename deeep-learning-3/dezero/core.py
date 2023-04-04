@@ -29,13 +29,15 @@ class Exp(Function):
         return np.exp(x)
 
 
-A = Square()
-B = Exp()
-C = Square()
+def numerical_diff(f: Function, x: Variable, eps: float = 1e-4) -> float:
+    x0 = Variable(x.data - eps)
+    x1 = Variable(x.data + eps)
+    y0 = f(x0)
+    y1 = f(x1)
+    return (y1.data - y0.data) / (2 * eps)
 
-x = Variable(np.array(0.5))
-a = A(x)
-b = B(a)
-y = C(b)
 
-print(y.data)
+f = Square()
+x = Variable(np.array(2.0))
+dy = numerical_diff(f, x)
+print(dy)  # 4.000000000004
